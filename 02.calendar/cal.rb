@@ -23,5 +23,5 @@ dates.each do |date|
   early_month_space = date.day < 10 ? ' ' : ''
   date_display = date == today ? Paint[today.day, :inverse] : date.day
   new_line = date.saturday? ? "\n" : ''
-  print ("#{first_day_space}#{early_month_space} #{date_display}#{new_line}")
+  print("#{first_day_space}#{early_month_space} #{date_display}#{new_line}")
 end
