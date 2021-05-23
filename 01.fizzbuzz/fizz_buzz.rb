@@ -1,4 +1,4 @@
-[*1..20].each do |n|
+(1..20).each do |n|
   if (n % 15).zero?
     puts 'FizzBuzz'
   elsif (n % 3).zero?
