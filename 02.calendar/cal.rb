@@ -16,7 +16,7 @@ last_day = Date.new(year, month, -1)
 dates = (first_day..last_day)
 
 full_month_name = first_day.strftime('%B')
-puts "     #{full_month_name} #{year}"
+puts "#{full_month_name} #{year}".center(21)
 puts ' Su Mo Tu We Th Fr Sa'
 dates.each do |date|
   first_day_space = '   ' * date.cwday if date == first_day && date.cwday != 7
