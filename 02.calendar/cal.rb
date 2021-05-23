@@ -14,14 +14,15 @@ month = options['m'].to_i
 first_day = Date.new(year, month)
 last_day = Date.new(year, month, -1)
 dates = (first_day..last_day)
-
 full_month_name = first_day.strftime('%B')
+spaces_before_first_day = ' ' * 3 * first_day.wday
+
 puts "#{full_month_name} #{year}".center(21)
 puts ' Su Mo Tu We Th Fr Sa'
+print spaces_before_first_day
 dates.each do |date|
-  first_day_space = '   ' * date.cwday if date == first_day && date.cwday != 7
   early_month_space = date.day < 10 ? ' ' : ''
   date_display = date == today ? Paint[today.day, :inverse] : date.day
   new_line = date.saturday? ? "\n" : ''
-  print("#{first_day_space}#{early_month_space} #{date_display}#{new_line}")
+  print("#{early_month_space} #{date_display}#{new_line}")
 end
