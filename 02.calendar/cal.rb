@@ -13,7 +13,7 @@ month = options['m'].to_i
 
 first_day = Date.new(year, month)
 last_day = Date.new(year, month, -1)
-dates = (first_day..last_day).to_a
+dates = (first_day..last_day)
 
 full_month_name = first_day.strftime('%B')
 puts "     #{full_month_name} #{year}"
