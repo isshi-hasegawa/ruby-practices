@@ -21,8 +21,11 @@ puts "#{full_month_name} #{year}".center(21)
 puts ' Su Mo Tu We Th Fr Sa'
 print spaces_before_first_day
 dates.each do |date|
-  early_month_space = date.day < 10 ? ' ' : ''
-  date_display = date == today ? Paint[today.day, :inverse] : date.day
-  new_line = date.saturday? ? "\n" : ''
-  print("#{early_month_space} #{date_display}#{new_line}")
+  if date == today
+    spaces_before_today = date.day < 10 ? ' ' * 2 : ' '
+    print spaces_before_today + Paint[today.day, :inverse].to_s
+  else
+    print date.day.to_s.rjust(3)
+  end
+  print "\n" if date.saturday?
 end
