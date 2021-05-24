@@ -21,9 +21,8 @@ puts "#{full_month_name} #{year}".center(21)
 puts ' Su Mo Tu We Th Fr Sa'
 print spaces_before_first_day
 dates.each do |date|
-  if date == today
-    spaces_before_today = date.day < 10 ? ' ' * 2 : ' '
-    print spaces_before_today + Paint[today.day, :inverse].to_s # Paint[foo, :inverse]でfooが反転して表示される
+  if date == first_day
+    print Paint[first_day.day, :inverse].rjust(3 + 8) # Paint[foo, :inverse]でfooが色反転して表示される
   else
     print date.day.to_s.rjust(3)
   end
