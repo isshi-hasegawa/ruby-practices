@@ -6,13 +6,13 @@ require 'etc'
 require 'optparse'
 
 def main(options)
-  # カレントディレクトリの情報を取得する
+  # カレントディレクトリのファイル名を取得する
   current_directory = Dir.glob('*')
-  # -aオプションを指定されたら、ファイル名の先頭に'.'を含めた配列をcurrent_directoryに再代入する
+  # -aオプションが指定されたら、ファイル名の先頭に'.'を含めた配列をcurrent_directoryに再代入する
   current_directory = Dir.glob('*', File::FNM_DOTMATCH) if options['a']
-  # -rオプションを指定されたら、current_directoryの配列を逆順にする
+  # -rオプションが指定されたら、current_directoryの配列を逆順にする
   current_directory.reverse! if options['r']
-
+  # -lオプションが指定されたらファイルごとに詳細を表示し、指定されなかったらファイル名を3列で表示する
   options['l'] ? list_segments_with_l_option(current_directory) : list_segments(current_directory)
 end
 
