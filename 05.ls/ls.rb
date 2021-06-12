@@ -76,7 +76,7 @@ def list_segments_with_l_option(current_directory)
     file_size = file_stat.size.to_s.rjust(6)
     # タイムスタンプを取得する
     mtime = file_stat.mtime
-    month = mtime.strftime('%-m %-d').rjust(3)
+    month = mtime.strftime('%-m').rjust(3)
     date = mtime.strftime('%-d').rjust(3)
     time_or_year = Date.today.year == mtime.year ? mtime.strftime('%R').rjust(6) : mtime.strftime('%Y').rjust(6)
     # ターミナルに表示する
