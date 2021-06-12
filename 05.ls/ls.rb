@@ -44,18 +44,26 @@ def convert_to_permission(permissions_num)
   }[permissions_num.to_sym]
 end
 
+def new_file_stat(file_name)
+  File::Stat.new(Dir.pwd + "/#{file_name}")
+end
+
+def total_blocks
+
+end
+
 if options['l']
   # totalを表示する
   total = 0
   current_directory.each do |file|
-    file_stat = File::Stat.new(Dir.pwd + "/#{file}")
+    file_stat = new_file_stat(file)
     total += file_stat.blocks
   end
   puts "total #{total}"
 
   # ファイルの詳細をターミナルに表示する
   current_directory.each do |file|
-    file_stat = File::Stat.new(Dir.pwd + "/#{file}")
+    file_stat = new_file_stat(file)
     mode_num = file_stat.mode.to_s(8).rjust(6, '0')
     print filetype = convert_to_filetype(mode_num[0..1])
     print owner_permission = convert_to_permission(mode_num[3])
