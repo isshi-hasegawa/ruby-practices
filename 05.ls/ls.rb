@@ -47,7 +47,7 @@ def create_file_stat(file_name)
   File::Stat.new(Dir.pwd + "/#{file_name}")
 end
 
-if options['l']
+def list_segments_with_l_option(current_directory)
   # totalを表示する
   total = 0
   current_directory.each do |file|
@@ -81,7 +81,9 @@ if options['l']
     print file
     print "\n"
   end
-else
+end
+
+def list_segments(current_directory)
   # each_sliceに渡す引数を決める
   slice_number = current_directory.size / 3
   slice_number += 1 unless (current_directory.size % 3).zero?
