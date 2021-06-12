@@ -5,17 +5,16 @@ require 'date'
 require 'etc'
 require 'optparse'
 
-# オプションの指定を受け取る
-options = ARGV.getopts('a', 'l', 'r')
+def main(options)
+  # カレントディレクトリの情報を取得する
+  current_directory = Dir.glob('*')
+  # -aオプションを指定されたら、ファイル名の先頭に'.'を含めた配列をcurrent_directoryに再代入する
+  current_directory = Dir.glob('*', File::FNM_DOTMATCH) if options['a']
+  # -rオプションを指定されたら、current_directoryの配列を逆順にする
+  current_directory.reverse! if options['r']
 
-# カレントディレクトリの情報を取得する
-current_directory = Dir.glob('*')
-
-# -aオプションを指定されたら、ファイル名の先頭の'.'をマッチさせる
-current_directory = Dir.glob('*', File::FNM_DOTMATCH) if options['a']
-
-# -rオプションを指定されたら、current_directoryの配列を逆順にする
-current_directory.reverse! if options['r']
+  options['l'] ? list_segments_with_l_option(current_directory) : list_segments(current_directory)
+end
 
 # ファイルタイプを表す数字を記号に変換する
 def convert_to_filetype(filetype_num)
@@ -108,3 +107,7 @@ else
     print "\n"
   end
 end
+
+# オプションの指定を受け取る
+options = ARGV.getopts('a', 'l', 'r')
+main(options)
