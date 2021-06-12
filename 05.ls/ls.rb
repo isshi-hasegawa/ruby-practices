@@ -16,6 +16,18 @@ def main(options)
   options['l'] ? list_segments_with_l_option(current_directory) : list_segments(current_directory)
 end
 
+# カレントディレクトリの当該ファイルのFile::Statオブジェクトを生成する
+def create_file_stat(file_name)
+  File::Stat.new(Dir.pwd + "/#{file_name}")
+end
+
+# ブロック数を合計する
+def total_blocks(current_directory)
+  current_directory.inject(0) do |result, file|
+    result + create_file_stat(file).blocks
+  end
+end
+
 # ファイルタイプを表す数字を記号に変換する
 def convert_to_filetype(filetype_num)
   {
@@ -43,42 +55,33 @@ def convert_to_permission(permission_num)
   }[permission_num.to_sym]
 end
 
-def create_file_stat(file_name)
-  File::Stat.new(Dir.pwd + "/#{file_name}")
-end
-
 def list_segments_with_l_option(current_directory)
-  # totalを表示する
-  total = 0
+  # ブロック数の合計を表示する
+  puts "total #{total_blocks(current_directory)}"
+  # ファイルの詳細情報をターミナルに表示する
   current_directory.each do |file|
     file_stat = create_file_stat(file)
-    total += file_stat.blocks
-  end
-  puts "total #{total}"
-
-  # ファイルの詳細をターミナルに表示する
-  current_directory.each do |file|
-    file_stat = create_file_stat(file)
+    # ファイルタイプとパーミッションを取得する
     mode_num = file_stat.mode.to_s(8).rjust(6, '0')
-    print filetype = convert_to_filetype(mode_num[0..1])
-    print owner_permission = convert_to_permission(mode_num[3])
-    print group_permission = convert_to_permission(mode_num[4])
-    print other_permission = convert_to_permission(mode_num[5])
-    print num_of_hard_link = file_stat.nlink.to_s.rjust(4)
-    print ' '
-    print owner_name = Etc.getpwuid(file_stat.uid).name
-    print ' ' * 2
-    print group_name = Etc.getgrgid(file_stat.gid).name
-    print file_size = file_stat.size.to_s.rjust(6)
-    print month = file_stat.mtime.strftime('%-m').rjust(3)
-    print date = file_stat.mtime.strftime('%-d').rjust(3)
-    if Date.today.year == file_stat.mtime.year
-      print time = file_stat.mtime.strftime('%R').rjust(6)
-    else
-      print year = file_stat.mtime.strftime('%Y').rjust(6)
-    end
-    print ' '
-    print file
+    filetype = convert_to_filetype(mode_num[0..1])
+    owner_permission = convert_to_permission(mode_num[3])
+    group_permission = convert_to_permission(mode_num[4])
+    other_permission = convert_to_permission(mode_num[5])
+    # ハードリンク数を取得する
+    hard_link_num = file_stat.nlink.to_s.rjust(4)
+    # オーナー名とグループ名を取得する
+    owner_name = Etc.getpwuid(file_stat.uid).name
+    group_name = Etc.getgrgid(file_stat.gid).name
+    # ファイルサイズを取得する
+    file_size = file_stat.size.to_s.rjust(6)
+    # タイムスタンプを取得する
+    mtime = file_stat.mtime
+    month = mtime.strftime('%-m %-d').rjust(3)
+    date = mtime.strftime('%-d').rjust(3)
+    time_or_year = Date.today.year == mtime.year ? mtime.strftime('%R').rjust(6) : mtime.strftime('%Y').rjust(6)
+    # ターミナルに表示する
+    print "#{filetype}#{owner_permission}#{group_permission}#{other_permission}#{hard_link_num} "
+    print "#{owner_name}  #{group_name}#{file_size}#{month}#{date}#{time_or_year} #{file}"
     print "\n"
   end
 end
