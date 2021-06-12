@@ -31,7 +31,7 @@ def convert_to_filetype(filetype_num)
 end
 
 # パーミッションを表す数字を記号に変換する
-def convert_to_permission(permissions_num)
+def convert_to_permission(permission_num)
   {
     '0': '---',
     '1': '--x',
@@ -41,15 +41,11 @@ def convert_to_permission(permissions_num)
     '5': 'r-x',
     '6': 'rw-',
     '7': 'rwx'
-  }[permissions_num.to_sym]
+  }[permission_num.to_sym]
 end
 
 def new_file_stat(file_name)
   File::Stat.new(Dir.pwd + "/#{file_name}")
-end
-
-def total_blocks
-
 end
 
 if options['l']
