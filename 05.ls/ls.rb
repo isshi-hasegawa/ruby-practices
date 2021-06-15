@@ -16,7 +16,6 @@ end
 
 # カレントディレクトリの当該ファイルのFile::Statオブジェクトを生成する
 def create_file_stat(file_name)
-  # File::Stat.new(Dir.pwd + "/#{file_name}")
   File::Stat.new(File.join(Dir.pwd, file_name))
 end
 
