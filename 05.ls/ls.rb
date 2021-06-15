@@ -83,8 +83,8 @@ def list_segments_with_l_option(files)
 end
 
 def list_segments(files)
-  # 配列の要素数を揃える
-  (3 - files.size % 3).times { files.push('') } if files.size % 3
+  # files.size % 3が1か2のときに配列の要素数を揃える
+  (3 - files.size % 3).times { files.push('') } if files.size % 3 >= 1
   # 配列を3分割し、行と列を入れ替える
   transposed_array = files.each_slice(files.size / 3).to_a.transpose
   # filesで最も文字数の多い要素を求め、その文字数をnum_for_spacesに格納する
