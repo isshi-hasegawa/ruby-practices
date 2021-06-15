@@ -6,10 +6,8 @@ require 'etc'
 require 'optparse'
 
 def main(options)
-  # カレントディレクトリのファイル名を取得する
-  current_directory = Dir.glob('*')
-  # -aオプションが指定されたら、ファイル名の先頭に'.'を含めた配列をcurrent_directoryに再代入する
-  current_directory = Dir.glob('*', File::FNM_DOTMATCH) if options['a']
+  # -aオプションが指定されたら、ファイル名の先頭に'.'を含めた配列をcurrent_directoryに格納する
+  current_directory = options['a'] ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
   # -rオプションが指定されたら、current_directoryの配列を逆順にする
   current_directory.reverse! if options['r']
   # -lオプションが指定されたらファイルごとに詳細を表示し、指定されなかったらファイル名を3列で表示する
