@@ -83,24 +83,16 @@ def list_segments_with_l_option(current_directory)
 end
 
 def list_segments(current_directory)
-  # each_sliceに渡す引数を決める
-  slice_number = current_directory.size / 3
-  if (current_directory.size % 3).zero?
-    sliced_array = current_directory.each_slice(slice_number).to_a
-  else
-    # 3で割り切れない場合はslice_numberに1を足してeach_sliceの引数に渡す
-    sliced_array = current_directory.each_slice(slice_number + 1).to_a
-    # 配列の要素数を揃える
-    (sliced_array[0].size - sliced_array[-1].size).times { sliced_array[-1].push('') }
-  end
-  # 配列の行と列を入れ替える
-  transposed_array = sliced_array.transpose
-  # ' 'に乗算する数字を決める（10はmacOSのlsコマンドの仕様から目測）
-  num_for_spaces = current_directory.max_by(&:size).size + 10
+  # 配列の要素数を揃える
+  (3 - current_directory.size % 3).times { current_directory.push('') } if current_directory.size % 3
+  # 配列を3分割し、行と列を入れ替える
+  transposed_array = current_directory.each_slice(current_directory.size / 3).to_a.transpose
+  # current_directoryで最も文字数の多い要素を求め、その文字数をnum_for_spacesに格納する
+  num_for_spaces = current_directory.max_by(&:size).size
   # ターミナルに表示する
   transposed_array.each do |ary|
-    print ary[0] + ' ' * (num_for_spaces - ary[0].size)
-    print ary[1] + ' ' * (num_for_spaces - ary[1].size)
+    print ary[0].ljust(num_for_spaces)
+    print ary[1].ljust(num_for_spaces)
     print ary[2]
     print "\n"
   end
