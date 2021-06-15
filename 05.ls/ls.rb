@@ -6,12 +6,12 @@ require 'etc'
 require 'optparse'
 
 def main(options)
-  # -aオプションが指定されたら、ファイル名の先頭に'.'を含めた配列をcurrent_directoryに格納する
-  current_directory = options['a'] ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
-  # -rオプションが指定されたら、current_directoryの配列を逆順にする
-  current_directory.reverse! if options['r']
+  # -aオプションが指定されたら、ファイル名の先頭に'.'を含めた配列をfilesに格納する
+  files = options['a'] ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
+  # -rオプションが指定されたら、filesの配列を逆順にする
+  files.reverse! if options['r']
   # -lオプションが指定されたらファイルごとに詳細を表示し、指定されなかったらファイル名を3列で表示する
-  options['l'] ? list_segments_with_l_option(current_directory) : list_segments(current_directory)
+  options['l'] ? list_segments_with_l_option(files) : list_segments(files)
 end
 
 # カレントディレクトリの当該ファイルのFile::Statオブジェクトを生成する
@@ -20,8 +20,8 @@ def create_file_stat(file_name)
 end
 
 # ブロック数を合計する
-def total_blocks(current_directory)
-  current_directory.map { |file| create_file_stat(file).blocks }.sum
+def total_blocks(files)
+  files.map { |file| create_file_stat(file).blocks }.sum
 end
 
 # ファイルタイプを表す数字を記号に変換する
@@ -51,11 +51,11 @@ def convert_to_permission(permission_num)
   }[permission_num.to_sym]
 end
 
-def list_segments_with_l_option(current_directory)
+def list_segments_with_l_option(files)
   # ブロック数の合計を表示する
-  puts "total #{total_blocks(current_directory)}"
+  puts "total #{total_blocks(files)}"
   # ファイルの詳細情報をターミナルに表示する
-  current_directory.each do |file|
+  files.each do |file|
     file_stat = create_file_stat(file)
     # ファイルタイプとパーミッションを取得する
     mode_num = file_stat.mode.to_s(8).rjust(6, '0')
@@ -82,13 +82,13 @@ def list_segments_with_l_option(current_directory)
   end
 end
 
-def list_segments(current_directory)
+def list_segments(files)
   # 配列の要素数を揃える
-  (3 - current_directory.size % 3).times { current_directory.push('') } if current_directory.size % 3
+  (3 - files.size % 3).times { files.push('') } if files.size % 3
   # 配列を3分割し、行と列を入れ替える
-  transposed_array = current_directory.each_slice(current_directory.size / 3).to_a.transpose
-  # current_directoryで最も文字数の多い要素を求め、その文字数をnum_for_spacesに格納する
-  num_for_spaces = current_directory.max_by(&:size).size
+  transposed_array = files.each_slice(files.size / 3).to_a.transpose
+  # filesで最も文字数の多い要素を求め、その文字数をnum_for_spacesに格納する
+  num_for_spaces = files.max_by(&:size).size
   # ターミナルに表示する
   transposed_array.each do |ary|
     print ary[0].ljust(num_for_spaces)
