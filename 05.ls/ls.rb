@@ -21,9 +21,7 @@ end
 
 # ブロック数を合計する
 def total_blocks(current_directory)
-  current_directory.inject(0) do |result, file|
-    result + create_file_stat(file).blocks
-  end
+  current_directory.map { |file| create_file_stat(file).blocks }.sum
 end
 
 # ファイルタイプを表す数字を記号に変換する
