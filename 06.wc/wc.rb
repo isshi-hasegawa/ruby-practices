@@ -23,9 +23,9 @@ end
 
 def print_total(option)
   ary = []
-  ary << ARGV.map { |file| to_lines(File.read(file)) }.sum
-  ary << ARGV.map { |file| to_words(File.read(file)) }.sum
-  ary << ARGV.map { |file| to_bytesize(File.read(file)) }.sum
+  ary << ARGV.map { |file| lines(File.read(file)) }.sum
+  ary << ARGV.map { |file| words(File.read(file)) }.sum
+  ary << ARGV.map { |file| bytesize(File.read(file)) }.sum
   print_rjust(ary, option)
   puts ' total'
 end
@@ -36,23 +36,23 @@ def word_count_with_standard_input(option)
   print "\n"
 end
 
-def to_lines(text)
+def lines(text)
   text.lines.size
 end
 
-def to_words(text)
+def words(text)
   text.split(/\s+|　+/).size
 end
 
-def to_bytesize(text)
+def bytesize(text)
   text.bytesize
 end
 
 def display_array(text)
   ary = []
-  ary << to_lines(text)
-  ary << to_words(text)
-  ary << to_bytesize(text)
+  ary << lines(text)
+  ary << words(text)
+  ary << bytesize(text)
   ary
 end
 
