@@ -15,42 +15,53 @@ end
 
 def word_count(option)
   ARGV.each do |file|
-    sentence = File.read(file)
-    print sentence.lines.size.to_s.rjust(8)
-    unless option['l']
-      print sentence.split(/\s+|　+/).size.to_s.rjust(8)
-      print sentence.bytesize.to_s.rjust(8)
-    end
+    ary = display_array(File.read(file))
+    print_rjust(ary, option)
     puts " #{file}"
   end
 end
 
 def print_total(option)
-  total_lines = 0
-  total_words = 0
-  total_bytesize = 0
-  ARGV.each do |file|
-    sentence = File.read(file)
-    total_lines += sentence.lines.size
-    total_words += sentence.split(/\s+|　+/).size
-    total_bytesize += sentence.bytesize
-  end
-  print total_lines.to_s.rjust(8)
-  unless option['l']
-    print total_words.to_s.rjust(8)
-    print total_bytesize.to_s.rjust(8)
-  end
+  ary = []
+  ary << ARGV.map { |file| to_lines(File.read(file)) }.sum
+  ary << ARGV.map { |file| to_words(File.read(file)) }.sum
+  ary << ARGV.map { |file| to_bytesize(File.read(file)) }.sum
+  print_rjust(ary, option)
   puts ' total'
 end
 
 def word_count_with_standard_input(option)
-  stdin = $stdin.read
-  print stdin.lines.size.to_s.rjust(8)
-  unless option['l'] # -lオプションが指定されていなければ
-    print stdin.split(/\s+|　+/).size.to_s.rjust(8)
-    print stdin.bytesize.to_s.rjust(8)
-  end
+  ary = display_array($stdin.read)
+  print_rjust(ary, option)
   print "\n"
+end
+
+def to_lines(text)
+  text.lines.size
+end
+
+def to_words(text)
+  text.split(/\s+|　+/).size
+end
+
+def to_bytesize(text)
+  text.bytesize
+end
+
+def display_array(text)
+  ary = []
+  ary << to_lines(text)
+  ary << to_words(text)
+  ary << to_bytesize(text)
+  ary
+end
+
+def print_rjust(ary, option)
+  print ary[0].to_s.rjust(8)
+  return if option['l'] # -lオプションが指定されていない場合
+
+  print ary[1].to_s.rjust(8)
+  print ary[2].to_s.rjust(8)
 end
 
 option = ARGV.getopts('l')
