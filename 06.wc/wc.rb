@@ -4,8 +4,13 @@
 require 'optparse'
 
 def main(option)
-  word_count(option)
-  print_total(option) if ARGV[1]
+  if ARGV[0] # 引数がある場合は引数を受け取る
+    word_count(option)
+    print_total(option) if ARGV[1]
+  else
+    # 引数がない場合は標準出力を受け取る
+    word_count_with_standard_input(option)
+  end
 end
 
 def word_count(option)
@@ -38,11 +43,7 @@ def print_total(option)
   puts ' total'
 end
 
-option = ARGV.getopts('l')
-if ARGV[0] # 引数がある場合
-  main(option)
-else
-  # 引数がない場合
+def word_count_with_standard_input(option)
   stdin = $stdin.read
   print stdin.lines.size.to_s.rjust(8)
   unless option['l'] # -lオプションが指定されていなければ
@@ -51,3 +52,6 @@ else
   end
   print "\n"
 end
+
+option = ARGV.getopts('l')
+main(option)
