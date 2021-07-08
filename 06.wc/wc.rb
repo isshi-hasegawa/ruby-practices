@@ -6,7 +6,7 @@ require 'optparse'
 def main(option)
   if ARGV[0] # 引数がある場合は引数を受け取る
     word_count(option)
-    print_total(option) if ARGV[1]
+    output_total(option) if ARGV[1]
   else
     # 引数がない場合は標準出力を受け取る
     word_count_with_standard_input(option)
@@ -15,24 +15,24 @@ end
 
 def word_count(option)
   ARGV.each do |file|
-    ary = display_array(File.read(file))
-    print_rjust(ary, option)
+    ary = to_array(File.read(file))
+    output_formatted_array(ary, option)
     puts " #{file}"
   end
 end
 
-def print_total(option)
+def output_total(option)
   ary = []
   ary << ARGV.map { |file| lines(File.read(file)) }.sum
   ary << ARGV.map { |file| words(File.read(file)) }.sum
   ary << ARGV.map { |file| bytesize(File.read(file)) }.sum
-  print_rjust(ary, option)
+  output_formatted_array(ary, option)
   puts ' total'
 end
 
 def word_count_with_standard_input(option)
-  ary = display_array($stdin.read)
-  print_rjust(ary, option)
+  ary = to_array($stdin.read)
+  output_formatted_array(ary, option)
   print "\n"
 end
 
@@ -48,7 +48,7 @@ def bytesize(text)
   text.bytesize
 end
 
-def display_array(text)
+def to_array(text)
   ary = []
   ary << lines(text)
   ary << words(text)
@@ -56,7 +56,7 @@ def display_array(text)
   ary
 end
 
-def print_rjust(ary, option)
+def output_formatted_array(ary, option)
   print ary[0].to_s.rjust(8)
   return if option['l'] # -lオプションが指定されていない場合
 
