@@ -6,7 +6,6 @@ require 'optparse'
 def main(option)
   if ARGV[0] # 引数がある場合は引数を受け取る
     word_count(option)
-    output_total(option) if ARGV[1]
   else
     # 引数がない場合は標準出力を受け取る
     word_count_with_standard_input(option)
@@ -14,19 +13,21 @@ def main(option)
 end
 
 def word_count(option)
+  total_lines = 0
+  total_words = 0
+  total_bytesize = 0
   ARGV.each do |file|
-    ary = to_array(File.read(file))
+    text = File.read(file)
+    ary = to_array(text)
     output_formatted_array(ary, option)
     puts " #{file}"
+    total_lines += lines(text)
+    total_words += words(text)
+    total_bytesize += bytesize(text)
   end
-end
+  return unless ARGV[1]
 
-def output_total(option)
-  ary = []
-  ary << ARGV.map { |file| lines(File.read(file)) }.sum
-  ary << ARGV.map { |file| words(File.read(file)) }.sum
-  ary << ARGV.map { |file| bytesize(File.read(file)) }.sum
-  output_formatted_array(ary, option)
+  output_formatted_array([total_lines, total_words, total_bytesize], option)
   puts ' total'
 end
 
