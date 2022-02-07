@@ -16,15 +16,15 @@ class Game
 
   attr_reader :marks
 
+  def strike?
+    marks[0] == 'X'
+  end
+
   def create_frames
     frames = []
     FRAME_NUMBER.times do
       frames << Frame.new(*marks[0..2])
-      if marks[0] == 'X'
-        marks.shift(1)
-      else
-        marks.shift(2)
-      end
+      strike? ? marks.shift(1) : marks.shift(2)
     end
     frames
   end
