@@ -7,12 +7,7 @@ class Frame
     @first_shot = Shot.new(first_mark)
     @second_shot = Shot.new(second_mark)
     @third_shot = Shot.new(third_mark)
-  end
-
-  def frame_score
-    shots = [first_shot, second_shot]
-    shots << third_shot if strike_or_spare?
-    shots.map(&:score).sum
+    @frame_score = calc_frame_score
   end
 
   private
@@ -21,5 +16,11 @@ class Frame
 
   def strike_or_spare?
     first_shot.score == 10 || [first_shot, second_shot].map(&:score).sum == 10
+  end
+
+  def calc_frame_score
+    shots = [first_shot, second_shot]
+    shots << third_shot if strike_or_spare?
+    shots.map(&:score).sum
   end
 end
