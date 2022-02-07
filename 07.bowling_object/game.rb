@@ -12,9 +12,7 @@ class Game
     frames.map(&:frame_score).sum
   end
 
-  private
-
-  attr_reader :marks
+  private attr_reader :marks # rubocop:disable Style/AccessModifierDeclarations
 
   def strike?
     marks[0] == 'X'

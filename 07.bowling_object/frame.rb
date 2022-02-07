@@ -10,9 +10,7 @@ class Frame
     @frame_score = calc_frame_score
   end
 
-  private
-
-  attr_reader :first_shot, :second_shot, :third_shot
+  private attr_reader :first_shot, :second_shot, :third_shot # rubocop:disable Style/AccessModifierDeclarations
 
   def strike_or_spare?
     first_shot.score == 10 || [first_shot, second_shot].map(&:score).sum == 10
