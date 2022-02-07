@@ -10,8 +10,6 @@ class Shot
   private
 
   def parse_mark(mark)
-    return 10 if mark == 'X'
-
-    mark.to_i
+    mark == 'X' ? 10 : mark.to_i
   end
 end
