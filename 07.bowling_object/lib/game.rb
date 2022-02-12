@@ -15,15 +15,12 @@ class Game
 
   private
 
-  def strike?
-    marks[0] == 'X'
-  end
-
   def create_frames
     frames = []
     FRAME_NUMBER.times do
-      frames << Frame.new(*marks[0..2])
-      strike? ? marks.shift(1) : marks.shift(2)
+      frame = Frame.new(*marks[0..2])
+      frames << frame
+      frame.strike? ? marks.shift(1) : marks.shift(2)
     end
     frames
   end
