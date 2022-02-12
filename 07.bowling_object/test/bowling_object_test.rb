@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'minitest/autorun'
-require_relative('./shot')
-require_relative('./frame')
-require_relative('./game')
+require_relative('../lib/shot')
+require_relative('../lib/frame')
+require_relative('../lib/game')
 
 class BowlingObjectTest < MiniTest::Test
   def calc_score(marks)
