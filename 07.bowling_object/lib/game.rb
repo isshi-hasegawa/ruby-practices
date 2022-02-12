@@ -5,14 +5,14 @@ class Game
 
   def initialize(marks)
     @marks = marks.split(',')
+    @frames = create_frames
   end
 
   def score
-    frames = create_frames
     frames.map(&:frame_score).sum
   end
 
-  private attr_reader :marks # rubocop:disable Style/AccessModifierDeclarations
+  private attr_reader :marks, :frames # rubocop:disable Style/AccessModifierDeclarations
 
   def strike?
     marks[0] == 'X'
