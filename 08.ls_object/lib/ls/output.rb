@@ -64,7 +64,7 @@ module Ls
 
     def output
       file_paths = files.map { |file| format_row(file, :basename, 0, :ljust) }
-      file_paths << [''] * (COLUMN - remainder) unless remainder.zero?
+      (COLUMN - remainder).times { file_paths << [''] } unless remainder.zero?
       row_count = file_paths.length / COLUMN
       file_paths.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
     end
