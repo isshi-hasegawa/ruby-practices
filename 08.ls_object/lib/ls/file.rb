@@ -20,7 +20,7 @@ module Ls
       stat.ftype
     end
 
-    def permission_numbers
+    def permission_number
       stat.mode.to_s(8)[-3..]
     end
 
