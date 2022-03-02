@@ -101,7 +101,8 @@ module Ls
     end
 
     def output
-      file_names = files.map { |file| format_row(file) }
+      max_basename = find_max_length(:basename)
+      file_names = files.map { |file| file.basename.ljust(max_basename) }
       (COLUMN - remainder).times { file_names << [''] } unless remainder.zero?
       row_count = file_names.length / COLUMN
       file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
