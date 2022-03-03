@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib/ls/output'
+require_relative '../lib/ls/output_format'
 
-Ls::Output.new.run
+Ls::OutputFormat.new.run

@@ -4,7 +4,7 @@ require_relative 'args'
 require_relative 'file'
 
 module Ls
-  class Output
+  class OutputFormat
     COLUMN = 3
 
     FILETYPES = {
@@ -70,6 +70,12 @@ module Ls
            .length
     end
 
+    def find_max_lengths
+      %i[nlink user group size].map do |key|
+        find_max_length(key)
+      end
+    end
+
     def format_row(data, max_nlink, max_user, max_group, max_size)
       [
         data[:type_and_mode],
@@ -83,9 +89,7 @@ module Ls
     end
 
     def rows
-      max_lengths = %i[nlink user group size].map do |key|
-        find_max_length(key)
-      end
+      max_lengths = find_max_lengths
       files.map do |file|
         data = build_data(file)
         format_row(data, *max_lengths)
