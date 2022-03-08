@@ -24,7 +24,7 @@ module Ls
       options[:a]
     end
 
-    def long_format?
+    def long?
       options[:l]
     end
 

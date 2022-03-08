@@ -35,7 +35,7 @@ module Ls
     end
 
     def format
-      args.long_format? ? format_long : format_short
+      args.long? ? format_long : format_short
     end
 
     private
