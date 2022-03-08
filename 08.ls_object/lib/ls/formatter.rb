@@ -4,7 +4,7 @@ require_relative 'args'
 require_relative 'file'
 
 module Ls
-  class OutputFormat
+  class Formatter
     COLUMN = 3
 
     FILETYPES = {
