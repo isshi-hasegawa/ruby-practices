@@ -28,11 +28,10 @@ module Ls
       '7' => 'rwx'
     }.freeze
 
-    private attr_reader :args, :files # rubocop:disable Style/AccessModifierDeclarations
+    private attr_reader :args # rubocop:disable Style/AccessModifierDeclarations
 
     def initialize
       @args = Ls::Args.new
-      @files = collect_file_paths.map { |path| Ls::File.new(path) }
     end
 
     def format
@@ -41,15 +40,16 @@ module Ls
 
     private
 
-    def collect_file_paths
+    def collect_files
       pattern = args.pathname
       params = args.all? ? [pattern, ::File::FNM_DOTMATCH] : [pattern]
       file_paths = Dir.glob(*params).sort
       args.reverse? ? file_paths.reverse! : file_paths
+      file_paths.map { |path| Ls::File.new(path) }
     end
 
     def total_blocks
-      "total #{files.map(&:blocks).sum}"
+      "total #{collect_files.map(&:blocks).sum}"
     end
 
     def build_data(file)
@@ -65,9 +65,9 @@ module Ls
     end
 
     def find_max_length(column)
-      files.map { |file| build_data(file)[column] }
-           .max_by(&:length)
-           .length
+      collect_files.map { |file| build_data(file)[column] }
+                   .max_by(&:length)
+                   .length
     end
 
     def find_max_lengths
@@ -90,7 +90,7 @@ module Ls
 
     def rows
       max_lengths = find_max_lengths
-      files.map do |file|
+      collect_files.map do |file|
         data = build_data(file)
         format_row(data, *max_lengths)
       end
@@ -101,12 +101,12 @@ module Ls
     end
 
     def remainder
-      files.length % COLUMN
+      collect_files.length % COLUMN
     end
 
     def format_short
       max_basename = find_max_length(:basename)
-      file_names = files.map { |file| file.basename.ljust(max_basename) }
+      file_names = collect_files.map { |file| file.basename.ljust(max_basename) }
       (COLUMN - remainder).times { file_names << [''] } unless remainder.zero?
       row_count = file_names.length / COLUMN
       file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
