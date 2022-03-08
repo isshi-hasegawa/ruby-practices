@@ -64,10 +64,14 @@ module Ls
       }
     end
 
+    def collect_file_data
+      collect_files.map { |file| build_data(file) }
+    end
+
     def find_max_length(column)
-      collect_files.map { |file| build_data(file)[column] }
-                   .max_by(&:length)
-                   .length
+      collect_file_data.map { |data| data[column] }
+                       .max_by(&:length)
+                       .length
     end
 
     def find_max_lengths
@@ -90,8 +94,7 @@ module Ls
 
     def rows
       max_lengths = find_max_lengths
-      collect_files.map do |file|
-        data = build_data(file)
+      collect_file_data.map do |data|
         format_row(data, *max_lengths)
       end
     end
