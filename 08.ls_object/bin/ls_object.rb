@@ -3,4 +3,4 @@
 
 require_relative '../lib/ls/formatter'
 
-Ls::Formatter.new.run
+puts Ls::Formatter.new.format

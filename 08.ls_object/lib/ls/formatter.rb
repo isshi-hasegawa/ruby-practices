@@ -35,8 +35,8 @@ module Ls
       @files = collect_file_paths.map { |path| Ls::File.new(path) }
     end
 
-    def run
-      puts args.long_format? ? output_long_format : output
+    def format
+      args.long_format? ? format_long : format_short
     end
 
     private
@@ -96,7 +96,7 @@ module Ls
       end
     end
 
-    def output_long_format
+    def format_long
       [total_blocks, rows].join("\n")
     end
 
@@ -104,7 +104,7 @@ module Ls
       files.length % COLUMN
     end
 
-    def output
+    def format_short
       max_basename = find_max_length(:basename)
       file_names = files.map { |file| file.basename.ljust(max_basename) }
       (COLUMN - remainder).times { file_names << [''] } unless remainder.zero?
