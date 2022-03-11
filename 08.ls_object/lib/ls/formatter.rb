@@ -44,8 +44,23 @@ module Ls
       [total_blocks, rows].join("\n")
     end
 
+    def format_short
+      max_basename = find_max_length(:basename)
+      file_names = collect_files.map { |file| file.basename.ljust(max_basename) }
+      (COLUMN - remainder).times { file_names << [''] } unless remainder.zero?
+      row_count = file_names.length / COLUMN
+      file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
+    end
+
     def total_blocks
       "total #{collect_files.map(&:blocks).sum}"
+    end
+
+    def rows
+      max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(key)] }
+      collect_file_data.map do |data|
+        format_row(data, max_lengths)
+      end
     end
 
     def collect_files
@@ -54,13 +69,6 @@ module Ls
       file_paths = Dir.glob(*params).sort
       args.reverse? ? file_paths.reverse! : file_paths
       file_paths.map { |path| Ls::File.new(path) }
-    end
-
-    def rows
-      max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(key)] }
-      collect_file_data.map do |data|
-        format_row(data, max_lengths)
-      end
     end
 
     def find_max_length(column)
@@ -95,14 +103,6 @@ module Ls
         data[:mtime],
         data[:basename]
       ].join(' ')
-    end
-
-    def format_short
-      max_basename = find_max_length(:basename)
-      file_names = collect_files.map { |file| file.basename.ljust(max_basename) }
-      (COLUMN - remainder).times { file_names << [''] } unless remainder.zero?
-      row_count = file_names.length / COLUMN
-      file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
     end
 
     def remainder
