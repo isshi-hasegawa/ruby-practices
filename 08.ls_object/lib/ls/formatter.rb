@@ -40,6 +40,14 @@ module Ls
 
     private
 
+    def format_long
+      [total_blocks, rows].join("\n")
+    end
+
+    def total_blocks
+      "total #{collect_files.map(&:blocks).sum}"
+    end
+
     def collect_files
       pattern = args.pathname
       params = args.all? ? [pattern, ::File::FNM_DOTMATCH] : [pattern]
@@ -48,8 +56,21 @@ module Ls
       file_paths.map { |path| Ls::File.new(path) }
     end
 
-    def total_blocks
-      "total #{collect_files.map(&:blocks).sum}"
+    def rows
+      max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(key)] }
+      collect_file_data.map do |data|
+        format_row(data, max_lengths)
+      end
+    end
+
+    def find_max_length(column)
+      collect_file_data.map { |data| data[column] }
+                       .max_by(&:length)
+                       .length
+    end
+
+    def collect_file_data
+      collect_files.map { |file| build_data(file) }
     end
 
     def build_data(file)
@@ -64,47 +85,16 @@ module Ls
       }
     end
 
-    def collect_file_data
-      collect_files.map { |file| build_data(file) }
-    end
-
-    def find_max_length(column)
-      collect_file_data.map { |data| data[column] }
-                       .max_by(&:length)
-                       .length
-    end
-
-    def find_max_lengths
-      %i[nlink user group size].map do |key|
-        find_max_length(key)
-      end
-    end
-
-    def format_row(data, max_nlink, max_user, max_group, max_size)
+    def format_row(data, max_lengths)
       [
         data[:type_and_mode],
-        data[:nlink].rjust(max_nlink + 1),
-        data[:user].ljust(max_user + 1),
-        data[:group].ljust(max_group + 1),
-        data[:size].rjust(max_size),
+        data[:nlink].rjust(max_lengths[:nlink] + 1),
+        data[:user].ljust(max_lengths[:user] + 1),
+        data[:group].ljust(max_lengths[:group] + 1),
+        data[:size].rjust(max_lengths[:size]),
         data[:mtime],
         data[:basename]
       ].join(' ')
-    end
-
-    def rows
-      max_lengths = find_max_lengths
-      collect_file_data.map do |data|
-        format_row(data, *max_lengths)
-      end
-    end
-
-    def format_long
-      [total_blocks, rows].join("\n")
-    end
-
-    def remainder
-      collect_files.length % COLUMN
     end
 
     def format_short
@@ -113,6 +103,10 @@ module Ls
       (COLUMN - remainder).times { file_names << [''] } unless remainder.zero?
       row_count = file_names.length / COLUMN
       file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
+    end
+
+    def remainder
+      collect_files.length % COLUMN
     end
   end
 end
