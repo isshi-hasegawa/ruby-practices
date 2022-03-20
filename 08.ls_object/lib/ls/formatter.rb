@@ -5,7 +5,7 @@ require_relative 'file'
 
 module Ls
   class Formatter
-    COLUMN = 3
+    COLUMN_COUNT = 3
 
     FILETYPES = {
       'fifo' => 'p',
@@ -47,8 +47,8 @@ module Ls
     def format_short
       max_basename = find_max_length(:basename)
       file_names = collect_files.map { |file| file.basename.ljust(max_basename) }
-      (COLUMN - remainder).times { file_names << [''] } unless remainder.zero?
-      row_count = file_names.length / COLUMN
+      (COLUMN_COUNT - remainder).times { file_names << [''] } unless remainder.zero?
+      row_count = file_names.length / COLUMN_COUNT
       file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
     end
 
@@ -106,7 +106,7 @@ module Ls
     end
 
     def remainder
-      collect_files.length % COLUMN
+      collect_files.length % COLUMN_COUNT
     end
   end
 end
