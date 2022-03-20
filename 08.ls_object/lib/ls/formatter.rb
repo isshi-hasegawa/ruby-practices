@@ -41,7 +41,7 @@ module Ls
     private
 
     def format_long
-      [total_blocks, rows].join("\n")
+      [blocks_total, rows].join("\n")
     end
 
     def format_short
@@ -52,7 +52,7 @@ module Ls
       file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
     end
 
-    def total_blocks
+    def blocks_total
       "total #{collect_files.map(&:blocks).sum}"
     end
 
