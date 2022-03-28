@@ -43,14 +43,14 @@ module Ls
     def format_long
       files = collect_files
       total_blocks = "total #{files.map(&:blocks).sum}"
-      max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(key)] }
-      rows = collect_file_data.map { |data| format_row(data, max_lengths) }
+      max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(files, key)] }
+      rows = collect_file_data(files).map { |data| format_row(data, max_lengths) }
       [total_blocks, rows].join("\n")
     end
 
     def format_short
       files = collect_files
-      max_basename_length = find_max_length(:basename)
+      max_basename_length = find_max_length(files, :basename)
       file_names = files.map { |file| file.basename.ljust(max_basename_length) }
 
       remainder = files.length % COLUMN_COUNT
@@ -68,14 +68,14 @@ module Ls
       file_paths.map { |path| Ls::File.new(path) }
     end
 
-    def find_max_length(column)
-      collect_file_data.map { |data| data[column] }
-                       .max_by(&:length)
-                       .length
+    def find_max_length(files, column)
+      collect_file_data(files).map { |data| data[column] }
+                              .max_by(&:length)
+                              .length
     end
 
-    def collect_file_data
-      collect_files.map { |file| build_data(file) }
+    def collect_file_data(files)
+      files.map { |file| build_data(file) }
     end
 
     def build_data(file)
