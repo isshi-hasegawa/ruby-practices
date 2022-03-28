@@ -35,21 +35,28 @@ module Ls
     end
 
     def format
-      args.long? ? format_long : format_short
+      files = collect_files
+      args.long? ? format_long(files) : format_short(files)
     end
 
     private
 
-    def format_long
-      files = collect_files
+    def collect_files
+      pattern = args.pathname
+      params = args.all? ? [pattern, ::File::FNM_DOTMATCH] : [pattern]
+      file_paths = Dir.glob(*params).sort
+      args.reverse? ? file_paths.reverse! : file_paths
+      file_paths.map { |path| Ls::File.new(path) }
+    end
+
+    def format_long(files)
       total_blocks = "total #{files.map(&:blocks).sum}"
       max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(files, key)] }
       rows = collect_file_data(files).map { |data| format_row(data, max_lengths) }
       [total_blocks, rows].join("\n")
     end
 
-    def format_short
-      files = collect_files
+    def format_short(files)
       max_basename_length = find_max_length(files, :basename)
       file_names = files.map { |file| file.basename.ljust(max_basename_length) }
 
@@ -58,14 +65,6 @@ module Ls
 
       row_count = file_names.length / COLUMN_COUNT
       file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
-    end
-
-    def collect_files
-      pattern = args.pathname
-      params = args.all? ? [pattern, ::File::FNM_DOTMATCH] : [pattern]
-      file_paths = Dir.glob(*params).sort
-      args.reverse? ? file_paths.reverse! : file_paths
-      file_paths.map { |path| Ls::File.new(path) }
     end
 
     def find_max_length(files, column)
