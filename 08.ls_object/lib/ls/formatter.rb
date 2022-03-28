@@ -43,6 +43,8 @@ module Ls
     def format_long
       files = collect_files
       total_blocks = "total #{files.map(&:blocks).sum}"
+      max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(key)] }
+      rows = collect_file_data.map { |data| format_row(data, max_lengths) }
       [total_blocks, rows].join("\n")
     end
 
@@ -56,13 +58,6 @@ module Ls
 
       row_count = file_names.length / COLUMN_COUNT
       file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
-    end
-
-    def rows
-      max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(key)] }
-      collect_file_data.map do |data|
-        format_row(data, max_lengths)
-      end
     end
 
     def collect_files
