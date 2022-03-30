@@ -36,7 +36,8 @@ module Ls
 
     def format
       files = collect_files
-      args.long? ? format_long(files) : format_short(files)
+      file_data = files.map { |file| build_data(file) }
+      args.long? ? format_long(files, file_data) : format_short(files, file_data)
     end
 
     private
@@ -49,34 +50,6 @@ module Ls
       file_paths.map { |path| Ls::File.new(path) }
     end
 
-    def format_long(files)
-      total_blocks = "total #{files.map(&:blocks).sum}"
-      max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(files, key)] }
-      rows = collect_file_data(files).map { |data| format_row(data, max_lengths) }
-      [total_blocks, rows].join("\n")
-    end
-
-    def format_short(files)
-      max_basename_length = find_max_length(files, :basename)
-      file_names = files.map { |file| file.basename.ljust(max_basename_length) }
-
-      remainder = files.length % COLUMN_COUNT
-      (COLUMN_COUNT - remainder).times { file_names << [''] } unless remainder.zero?
-
-      row_count = file_names.length / COLUMN_COUNT
-      file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
-    end
-
-    def find_max_length(files, column)
-      collect_file_data(files).map { |data| data[column] }
-                              .max_by(&:length)
-                              .length
-    end
-
-    def collect_file_data(files)
-      files.map { |file| build_data(file) }
-    end
-
     def build_data(file)
       {
         type_and_mode: FILETYPES[file.file_type] + file.permission_number.gsub(/\d/, PERMISSIONS),
@@ -87,6 +60,30 @@ module Ls
         mtime: file.modified_time.strftime('%b %e %H:%M'),
         basename: file.basename
       }
+    end
+
+    def format_long(files, file_data)
+      total_blocks = "total #{files.map(&:blocks).sum}"
+      max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(file_data, key)] }
+      rows = file_data.map { |data| format_row(data, max_lengths) }
+      [total_blocks, rows].join("\n")
+    end
+
+    def format_short(files, file_data)
+      max_basename_length = find_max_length(file_data, :basename)
+      file_names = files.map { |file| file.basename.ljust(max_basename_length) }
+
+      remainder = files.length % COLUMN_COUNT
+      (COLUMN_COUNT - remainder).times { file_names << [''] } unless remainder.zero?
+
+      row_count = file_names.length / COLUMN_COUNT
+      file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
+    end
+
+    def find_max_length(file_data, column)
+      file_data.map { |data| data[column] }
+               .max_by(&:length)
+               .length
     end
 
     def format_row(data, max_lengths)
