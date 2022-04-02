@@ -51,6 +51,7 @@ module Ls
 
     def build_data(file)
       {
+        blocks: file.blocks,
         type_and_mode: FILETYPES[file.file_type] + file.permission_number.gsub(/\d/, PERMISSIONS),
         nlink: file.hard_link_size.to_s,
         user: file.owner_name,
@@ -62,7 +63,7 @@ module Ls
     end
 
     def format_long(file_data_list)
-      total_blocks = "total #{file_data_list.map(&:blocks).sum}"
+      total_blocks = "total #{file_data_list.map { |data| data[:blocks] }.sum}"
       max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(file_data_list, key)] }
       rows = file_data_list.map { |data| format_row(data, max_lengths) }
       [total_blocks, rows].join("\n")
@@ -70,9 +71,9 @@ module Ls
 
     def format_short(file_data_list)
       max_basename_length = find_max_length(file_data_list, :basename)
-      file_names = files.map { |file| file.basename.ljust(max_basename_length) }
+      file_names = file_data_list.map { |data| data[:basename].ljust(max_basename_length) }
 
-      remainder = files.length % COLUMN_COUNT
+      remainder = file_names.length % COLUMN_COUNT
       (COLUMN_COUNT - remainder).times { file_names << [''] } unless remainder.zero?
 
       row_count = file_names.length / COLUMN_COUNT
