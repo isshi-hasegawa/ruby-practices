@@ -35,9 +35,8 @@ module Ls
     end
 
     def format
-      files = collect_files
-      file_data = files.map { |file| build_data(file) }
-      args.long? ? format_long(files, file_data) : format_short(files, file_data)
+      file_data_list = collect_files.map { |file| build_data(file) }
+      args.long? ? format_long(file_data_list) : format_short(file_data_list)
     end
 
     private
@@ -62,15 +61,15 @@ module Ls
       }
     end
 
-    def format_long(files, file_data)
-      total_blocks = "total #{files.map(&:blocks).sum}"
-      max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(file_data, key)] }
-      rows = file_data.map { |data| format_row(data, max_lengths) }
+    def format_long(file_data_list)
+      total_blocks = "total #{file_data_list.map(&:blocks).sum}"
+      max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(file_data_list, key)] }
+      rows = file_data_list.map { |data| format_row(data, max_lengths) }
       [total_blocks, rows].join("\n")
     end
 
-    def format_short(files, file_data)
-      max_basename_length = find_max_length(file_data, :basename)
+    def format_short(file_data_list)
+      max_basename_length = find_max_length(file_data_list, :basename)
       file_names = files.map { |file| file.basename.ljust(max_basename_length) }
 
       remainder = files.length % COLUMN_COUNT
