@@ -81,10 +81,8 @@ module Ls
       file_names.each_slice(row_count).to_a.transpose.map { |row| row.join("\t") }
     end
 
-    def find_max_length(file_data, column)
-      file_data.map { |data| data[column] }
-               .max_by(&:length)
-               .length
+    def find_max_length(file_data_list, column)
+      file_data_list.map { |data| data[column].length }.max
     end
 
     def format_row(data, max_lengths)
