@@ -63,10 +63,11 @@ module Ls
     end
 
     def format_long(file_data_list)
-      total_blocks = "total #{file_data_list.map { |data| data[:blocks] }.sum}"
+      total = file_data_list.sum { |data| data[:blocks] }
+      total_text = "total #{total}"
       max_lengths = %i[nlink user group size].to_h { |key| [key, find_max_length(file_data_list, key)] }
       rows = file_data_list.map { |data| format_row(data, max_lengths) }
-      [total_blocks, rows].join("\n")
+      [total_text, rows].join("\n")
     end
 
     def format_short(file_data_list)
