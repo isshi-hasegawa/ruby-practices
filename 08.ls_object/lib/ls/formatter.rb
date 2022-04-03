@@ -44,8 +44,9 @@ module Ls
     def collect_files
       pattern = args.pathname
       params = args.all? ? [pattern, ::File::FNM_DOTMATCH] : [pattern]
-      file_paths = args.reverse? ? Dir.glob(*params).sort.reverse : Dir.glob(*params).sort
-      file_paths.map { |path| Ls::File.new(path) }
+      file_paths = Dir.glob(*params).sort
+      sorted_file_paths = args.reverse? ? file_paths.reverse : file_paths
+      sorted_file_paths.map { |path| Ls::File.new(path) }
     end
 
     def build_data(file)
